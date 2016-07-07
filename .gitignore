@@ -1,0 +1,16 @@
+.DS_Store
+Thumbs.db
+.tags*
+._*
+.vagrant
+*.iml
+
+*.gem
+.bundle
+vendor/bundle
+files/**/cache/
+pkg/*
+bin/*
+.tmp/*
+
+!.gitkeep

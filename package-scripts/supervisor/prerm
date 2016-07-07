@@ -1,0 +1,27 @@
+#!/bin/sh
+#
+# Perform necessary supervisor setup steps
+# prior to installing package.
+#
+
+PROGNAME=`basename $0`
+
+error_exit()
+{
+  echo "${PROGNAME}: ${1:-"Unknown Error"}" 1>&2
+  exit 1
+}
+
+if [ -f "/bin/systemctl" ]; then
+  # systemd (el7)
+  if [ -f "/usr/lib/systemd/system/supervisord.service" ]; then
+    /bin/systemctl stop supervisord
+  fi
+elif [ -f "/etc/redhat-release" -o -f "/etc/fedora-release" -o -f "/etc/system-release" ]; then
+  # init (el5, el6)
+  if [ -f "/etc/init.d/supervisord" ]; then
+    /sbin/service supervisord stop
+  fi
+fi
+
+exit 0

@@ -1,0 +1,19 @@
+#!/bin/sh
+#
+# Perform necessary supervisor removal steps
+# after package is uninstalled.
+#
+rm -f /usr/bin/supervisorctl
+rm -f /usr/bin/supervisord
+rm -f /etc/logrotate.d/supervisor
+rm -f /etc/supervisord.conf
+
+if [ -f "/bin/systemctl" ]; then
+  # systemd (el7)
+  rm -f /usr/lib/systemd/system/supervisord.service
+elif [ -f "/etc/redhat-release" -o -f "/etc/fedora-release" -o -f "/etc/system-release" ]; then
+  # init (el5, el6)
+  rm -f /etc/init.d/supervisord
+fi
+
+exit 0

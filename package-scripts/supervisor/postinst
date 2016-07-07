@@ -1,0 +1,54 @@
+#!/bin/sh
+#
+# Perform necessary supervisor setup steps
+# after package is installed.
+#
+
+PROGNAME=`basename $0`
+
+error_exit()
+{
+  echo "${PROGNAME}: ${1:-"Unknown Error"}" 1>&2
+  exit 1
+}
+
+ln -fs /opt/supervisor/bin/supervisorctl /usr/bin/supervisorctl
+ln -fs /opt/supervisor/bin/supervisord /usr/bin/supervisord
+
+if [ -d "/etc/logrotate.d/" ]; then
+  cp -f /opt/supervisor/etc/logrotate.d/supervisor /etc/logrotate.d/supervisor
+fi
+
+cp -f /opt/supervisor/etc/supervisord.conf /etc/supervisord.conf
+
+if [ ! -e "/etc/supervisord.d" ]; then
+  mkdir -p /etc/supervisord.d
+fi
+chown -R root:root /etc/supervisord.d
+
+if [ ! -e "/var/log/supervisor" ]; then
+  mkdir -p /var/log/supervisor
+fi
+chown -R root:root /var/log/supervisor
+
+if [ ! -e "/var/run/supervisor" ]; then
+  mkdir -p /var/run/supervisor
+fi
+chown -R root:root /var/run/supervisor
+
+if [ -f "/bin/systemctl" ]; then
+  # systemd (el7)
+  mkdir -p /usr/lib/systemd/system
+  cp -f /opt/supervisor//usr/lib/systemd/system/supervisord.service /usr/lib/systemd/system/supervisord.service
+  /bin/systemctl daemon-reload
+  sleep 2
+  /bin/systemctl enable supervisord.service
+
+elif [ -f "/etc/redhat-release" -o -f "/etc/fedora-release" -o -f "/etc/system-release" ]; then
+  # init (el5, el6)
+  cp -f /opt/supervisor/etc/init.d/supervisord /etc/init.d/supervisord
+  /sbin/chkconfig --add supervisord
+  /sbin/chkconfig supervisord on
+fi
+
+exit 0

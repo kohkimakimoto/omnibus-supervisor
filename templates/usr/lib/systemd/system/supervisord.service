@@ -1,0 +1,16 @@
+[Unit]
+Description=Process Monitoring and Control Daemon
+After=rc-local.service
+
+[Service]
+Type=forking
+ExecStart=/usr/bin/supervisord
+ExecStop=/usr/bin/supervisorctl $OPTIONS shutdown
+ExecReload=/usr/bin/supervisorctl $OPTIONS reload
+KillMode=process
+Restart=on-failure
+RestartSec=42s
+SysVStartPriority=99
+
+[Install]
+WantedBy=multi-user.target

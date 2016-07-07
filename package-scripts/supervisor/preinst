@@ -1,0 +1,5 @@
+#!/bin/sh
+#
+# Perform necessary supervisor setup steps
+# before package is installed.
+#
